@@ -17,3 +17,11 @@ services:
       # needs to be the same path on host and inside the container,
       # docker mgmt cmds run outside of docker but expect the paths from within
       - '/var/lib/dpkg/status:/var/lib/dpkg/status'
+  # Watchtower - Check if new images are available
+  watchtower: # https://containrrr.dev/watchtower
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 43200 # Check every half day

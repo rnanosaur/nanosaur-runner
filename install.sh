@@ -93,6 +93,19 @@ main()
 
     sudo -v
 
+    if ! getent group docker | grep -q "\b$USER\b" ; then
+        echo " - Add docker permissions to ${bold}${green}user=$USER${reset}"
+        sudo usermod -aG docker $USER
+    fi
+
+    # Check if is installed docker-compose
+    if ! command -v docker-compose &> /dev/null ; then
+        echo " - ${bold}${green}Install docker-compose${reset}"
+        sudo apt-get install -y libffi-dev python-openssl libssl-dev
+        sudo -H pip3 install -U pip
+        sudo pip3 install -U docker-compose
+    fi
+
     # Make sure the nvidia docker runtime will be used for builds
     DEFAULT_RUNTIME=$(docker info | grep "Default Runtime: nvidia" ; true)
     if [[ -z "$DEFAULT_RUNTIME" ]]; then
@@ -101,12 +114,16 @@ main()
         sudo cp docker-config/daemon.json /etc/docker/daemon.json
     fi
 
-    echo "${green} - Enable dockers to build jetson_multimedia api${reset}"
-    sudo cp docker-config/jetson_multimedia_api.csv /etc/nvidia-container-runtime/host-files-for-container.d/jetson_multimedia_api.csv
+    local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
+    echo "${green} - Enable dockers to build jetson_multimedia api folder${reset}"
+    sudo cp docker-config/jetson_multimedia_api.csv $PATH_HOST_FILES4CONTAINER/jetson_multimedia_api.csv
+    echo "${green} - Enable dockers to build L4T missing libraries${reset}"
+    sudo cp docker-config/l4t_fix.csv $PATH_HOST_FILES4CONTAINER/l4t_fix.csv
 
     echo "${yellow} - Restart docker server${reset}"
     sudo systemctl restart docker.service
 }
 
 main $@
+exit 0
 #EOF

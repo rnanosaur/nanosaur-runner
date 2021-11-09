@@ -23,6 +23,7 @@ Follow the installer running
 ```
 git clone https://github.com/rnanosaur/nanosaur-jetson-runner.git
 cd nanosaur-jetson-runner && ./install.sh
+docker-compose up -d
 ```
 
 # Reference
