@@ -24,3 +24,89 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+bold=`tput bold`
+red=`tput setaf 1`
+green=`tput setaf 2`
+yellow=`tput setaf 3`
+reset=`tput sgr0`
+
+usage()
+{
+    if [ "$1" != "" ]; then
+        echo "${red}$1${reset}" >&2
+    fi
+
+    local name=$(basename ${0})
+    echo "nanosaur-jetson-runner installer." >&2
+    echo "" >&2
+    echo "Options:" >&2
+    echo "   -h|--help            | This help" >&2
+    echo "   -y                   | Run this script silent" >&2
+}
+
+
+main()
+{
+    local PLATFORM="$(uname -m)"
+    # Check if is running on NVIDIA Jetson platform
+    if [[ $PLATFORM != "aarch64" ]]; then
+        echo "${red}Run this script only on ${bold}${green}NVIDIA${reset}${red} Jetson platform${reset}"
+        exit 33
+    fi
+
+    local SILENT=false
+	# Decode all information from startup
+    while [ -n "$1" ]; do
+        case "$1" in
+            -h|--help) # Load help
+                usage
+                exit 0
+                ;;
+            -y)
+                SILENT=true
+                ;;
+            *)
+                usage "[ERROR] Unknown option: $1" >&2
+                exit 1
+                ;;
+        esac
+            shift 1
+    done
+
+    while ! $SILENT; do
+        read -p "Do you wish to install nanosaur-jetson-runner? [Y/n] " yn
+            case $yn in
+                [Yy]* ) # Break and install jetson_stats 
+                        break;;
+                [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+
+    # Setup enviroment
+    if [ ! -f .env ] ; then
+        touch .env
+        echo "GITHUB_ACTIONS_RUNNER_NAME=$HOSTNAME" >> .env
+        read -p "Enter GitHub Action token: " TOKEN
+        echo "GITHUB_ACTIONS_ACCESS_TOKEN=$TOKEN" >> .env
+    fi
+
+    sudo -v
+
+    # Make sure the nvidia docker runtime will be used for builds
+    DEFAULT_RUNTIME=$(docker info | grep "Default Runtime: nvidia" ; true)
+    if [[ -z "$DEFAULT_RUNTIME" ]]; then
+        echo "${yellow} - Set runtime nvidia on /etc/docker/daemon.json${reset}"
+        sudo mv /etc/docker/daemon.json /etc/docker/daemon.json.bkp
+        sudo cp docker-config/daemon.json /etc/docker/daemon.json
+    fi
+
+    echo "${green} - Enable dockers to build jetson_multimedia api${reset}"
+    sudo cp docker-config/jetson_multimedia_api.csv /etc/nvidia-container-runtime/host-files-for-container.d/jetson_multimedia_api.csv
+
+    echo "${yellow} - Restart docker server${reset}"
+    sudo systemctl restart docker.service
+}
+
+main $@
+#EOF
