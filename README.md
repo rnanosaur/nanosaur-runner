@@ -9,12 +9,12 @@ You need a [Github token PAT](https://developer.github.com/v3/actions/self_hoste
 the following scopes are selected:
 
 * repo (all)
+* workflow
 * admin:org (all) (**mandatory for organization-wide runner**)
 * admin:public_key - read:public_key
 * admin:repo_hook - read:repo_hook
 * admin:org_hook
 * notifications
-* workflow
 
 # Install
 
