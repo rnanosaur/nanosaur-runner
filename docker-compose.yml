@@ -9,7 +9,7 @@ services:
       ACCESS_TOKEN: ${GITHUB_ACTIONS_ACCESS_TOKEN}
       RUNNER_WORKDIR: ${PWD}/github-actions
       RUNNER_SCOPE: 'org'
-      LABELS: linux,gpu,JetsonNano
+      LABELS: linux,gpu,Jetson
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - '${PWD}/github-actions:${PWD}/github-actions'
