@@ -89,6 +89,7 @@ main()
         echo "GITHUB_ACTIONS_RUNNER_NAME=$HOSTNAME" >> .env
         read -p "Enter GitHub Action token: " TOKEN
         echo "GITHUB_ACTIONS_ACCESS_TOKEN=$TOKEN" >> .env
+        echo "HOME=$HOME" >> .env
     fi
 
     sudo -v
