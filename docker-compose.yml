@@ -29,3 +29,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOME}/.docker/config.json:/config.json
     command: --interval 43200 # Check every half day
+  portainerservice:
+    image: portainer/portainer
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9000:9000"
+
+volumes:
+  portainer_data:
