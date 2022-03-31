@@ -15,6 +15,8 @@ Meet nanosaur:
 * 🐳 nanosaur [Docker hub](https://hub.docker.com/u/nanosaur)
 * ⁉️ Something wrong? Open an [issue](https://github.com/rnanosaur/nanosaur/issues)
 
+-------------
+
 Nanosaur github actions server runner based from [Docker Github Actions Runner](https://github.com/myoung34/docker-github-actions-runner)
 
 # Before install
