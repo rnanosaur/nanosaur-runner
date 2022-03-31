@@ -1,5 +1,0 @@
-lib, /usr/lib/aarch64-linux-gnu/tegra/libnvcapture.so
-lib, /usr/lib/aarch64-linux-gnu/tegra/libv4l2_nvcuvidvideocodec.so
-lib, /usr/lib/aarch64-linux-gnu/tegra/libnvcuvidv4l2.so
-lib, /usr/lib/aarch64-linux-gnu/tegra/libnvpva.so
-lib, /usr/lib/aarch64-linux-gnu/tegra/libnvisp_utils.so

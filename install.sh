@@ -118,8 +118,6 @@ main()
     local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
     echo "${green} - Enable dockers to build jetson_multimedia api folder${reset}"
     sudo cp docker-config/jetson_multimedia_api.csv $PATH_HOST_FILES4CONTAINER/jetson_multimedia_api.csv
-    echo "${green} - Enable dockers to build L4T missing libraries${reset}"
-    sudo cp docker-config/l4t_fix.csv $PATH_HOST_FILES4CONTAINER/l4t_fix.csv
 
     echo "${yellow} - Restart docker server${reset}"
     sudo systemctl restart docker.service
