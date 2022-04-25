@@ -1,4 +1,4 @@
-# 🦕 nanosaur-jetson-runner
+# 🦕 nanosaur-runner
 
 [![Discord](https://img.shields.io/discord/797461428646707211)](https://discord.gg/YvxjxEFPkb) [![GitHub Org's stars](https://img.shields.io/github/stars/rnanosaur?style=social)](https://github.com/rnanosaur) [![Twitter Follow](https://img.shields.io/twitter/follow/raffaello86?style=social)](https://twitter.com/raffaello86) [![robo.panther](https://img.shields.io/badge/Follow:-robo.panther-E4405F?style=social&logo=instagram)](https://www.instagram.com/robo.panther/)
 
@@ -35,10 +35,23 @@ the following scopes are selected:
 
 # Install
 
-Follow the installer running
+Install the nanosaur runner
 
 ```
-git clone https://github.com/rnanosaur/nanosaur-jetson-runner.git
-cd nanosaur-jetson-runner && ./install.sh
+git clone https://github.com/rnanosaur/nanosaur-runner.git
+cd nanosaur-runner && ./install.sh
+```
+
+# Run self-hosed runner
+
+## NVIDIA Jetson
+
+```
 docker-compose up -d
+```
+
+## x86-64 architecture
+
+```
+docker-compose up -f docker-compose.x86.yml -d
 ```

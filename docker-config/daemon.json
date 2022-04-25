@@ -5,6 +5,5 @@
             "runtimeArgs": []
         }
     },
-
     "default-runtime": "nvidia"
 }

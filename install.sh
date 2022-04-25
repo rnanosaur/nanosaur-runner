@@ -30,6 +30,8 @@ green=`tput setaf 2`
 yellow=`tput setaf 3`
 reset=`tput sgr0`
 
+PLATFORM="$(uname -m)"
+
 usage()
 {
     if [ "$1" != "" ]; then
@@ -44,16 +46,61 @@ usage()
     echo "   -y                   | Run this script silent" >&2
 }
 
+install_jetson()
+{
+    echo "Install on ${bold}${green}NVIDIA${reset} ${green}Jetson platform${reset}"
+
+    # Check if is installed docker-compose
+    if ! command -v docker-compose &> /dev/null ; then
+        echo " - ${bold}${green}Install docker-compose${reset}"
+        sudo apt-get install -y libffi-dev python-openssl libssl-dev
+        sudo -H pip3 install -U pip
+        sudo pip3 install -U docker-compose
+    fi
+
+    local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
+    echo "${green} - Enable dockers to build jetson_multimedia api folder${reset}"
+    sudo cp docker-config/jetson_multimedia_api.csv $PATH_HOST_FILES4CONTAINER/jetson_multimedia_api.csv
+}
+
+install_x86()
+{
+    # Check if is running on NVIDIA Jetson platform
+    echo "Install on ${bold}${green}Desktop${reset} ${green}platform${reset}"
+
+    # Check if GPU is installed
+    if type nvidia-smi &>/dev/null; then
+        GPU_ATTACHED=(`nvidia-smi -a | grep "Attached GPUs"`)
+        if [ ! -z $GPU_ATTACHED ]; then
+            echo "${bold}${green}GPU attached!${reset}"
+        else
+            echo "${red}Install NVIDIA grafic card drivers and rerun!${reset}"
+            exit 33
+        fi
+    fi
+
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html
+
+    # https://stackoverflow.com/questions/1298066/how-can-i-check-if-a-package-is-installed-and-install-it-if-not
+    REQUIRED_PKG="nvidia-docker2"
+    PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+    echo Checking for $REQUIRED_PKG: $PKG_OK
+    if [ "" = "$PKG_OK" ]; then
+        echo "No $REQUIRED_PKG. Setting up $REQUIRED_PKG."
+        # Add distribution
+        distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+            && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+            && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+                sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+                sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+        # Install nvidia-docker2
+        sudo apt-get install -y nvidia-docker2
+    fi
+}
 
 main()
 {
-    local PLATFORM="$(uname -m)"
-    # Check if is running on NVIDIA Jetson platform
-    if [[ $PLATFORM != "aarch64" ]]; then
-        echo "${red}Run this script only on ${bold}${green}NVIDIA${reset}${red} Jetson platform${reset}"
-        exit 33
-    fi
-
     local SILENT=false
 	# Decode all information from startup
     while [ -n "$1" ]; do
@@ -94,17 +141,16 @@ main()
 
     sudo -v
 
+    # Check if is running on NVIDIA Jetson platform
+    if [[ $PLATFORM = "aarch64" ]]; then
+        install_jetson
+    else
+        install_x86
+    fi
+
     if ! getent group docker | grep -q "\b$USER\b" ; then
         echo " - Add docker permissions to ${bold}${green}user=$USER${reset}"
         sudo usermod -aG docker $USER
-    fi
-
-    # Check if is installed docker-compose
-    if ! command -v docker-compose &> /dev/null ; then
-        echo " - ${bold}${green}Install docker-compose${reset}"
-        sudo apt-get install -y libffi-dev python-openssl libssl-dev
-        sudo -H pip3 install -U pip
-        sudo pip3 install -U docker-compose
     fi
 
     # Make sure the nvidia docker runtime will be used for builds
@@ -114,10 +160,6 @@ main()
         sudo mv /etc/docker/daemon.json /etc/docker/daemon.json.bkp
         sudo cp docker-config/daemon.json /etc/docker/daemon.json
     fi
-
-    local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
-    echo "${green} - Enable dockers to build jetson_multimedia api folder${reset}"
-    sudo cp docker-config/jetson_multimedia_api.csv $PATH_HOST_FILES4CONTAINER/jetson_multimedia_api.csv
 
     echo "${yellow} - Restart docker server${reset}"
     sudo systemctl restart docker.service
