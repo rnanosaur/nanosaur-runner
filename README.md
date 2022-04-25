@@ -17,7 +17,7 @@ Meet nanosaur:
 
 -------------
 
-Nanosaur github actions server runner based from [Docker Github Actions Runner](https://github.com/myoung34/docker-github-actions-runner)
+Nanosaur github **self hosted runner** based from [Docker Github Actions Runner](https://github.com/myoung34/docker-github-actions-runner)
 
 # Before install
 
