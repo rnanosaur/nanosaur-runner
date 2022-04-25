@@ -121,10 +121,9 @@ main()
     done
 
     while ! $SILENT; do
-        read -p "Do you wish to install nanosaur-jetson-runner? [Y/n] " yn
+        read -p "Do you wish to install nanosaur-runner? [Y/n] " yn
             case $yn in
-                [Yy]* ) # Break and install jetson_stats 
-                        break;;
+                [Yy]* ) break;;
                 [Nn]* ) exit;;
             * ) echo "Please answer yes or no.";;
         esac
