@@ -46,6 +46,8 @@ services:
       # needs to be the same path on host and inside the container,
       # docker mgmt cmds run outside of docker but expect the paths from within
       - '/var/lib/dpkg/status:/var/lib/dpkg/status'
+    labels:
+      - "com.centurylinklabs.watchtower.scope=nanosaur-runner"
   # Watchtower - Check if new images are available
   watchtower: # https://containrrr.dev/watchtower
     image: containrrr/watchtower
@@ -56,4 +58,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOME}/.docker/config.json:/config.json
-    command: --interval 43200 # Check every half day
+    command: --scope nanosaur-runner --interval 43200 # Check every half day
+    labels:
+      - "com.centurylinklabs.watchtower.scope=nanosaur-runner"

@@ -53,5 +53,5 @@ docker-compose up -d
 ## x86-64 architecture
 
 ```
-docker-compose up -f docker-compose.x86.yml -d
+docker compose -f docker-compose.x86.yml up -d
 ```
