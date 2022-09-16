@@ -46,22 +46,29 @@ usage()
     echo "   -y                   | Run this script silent" >&2
 }
 
-install_jetson()
+install_docker()
 {
-    echo "Install on ${bold}${green}NVIDIA${reset} ${green}Jetson platform${reset}"
-
-    # Check if is installed docker
+    # Check if is installed docker compose
     # https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository
+    docker compose version &> /dev/null
+    if [ $? -ne 0 ]; then
         sudo apt-get update
         sudo apt-get install -y ca-certificates curl gnupg lsb-release
         sudo mkdir -p /etc/apt/keyrings
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        if [ ! -f /etc/apt/keyrings/docker.gpg ] ; then 
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        fi
         echo \
             "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
             $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
         sudo apt-get update
-        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
     fi
+}
+
+install_jetson()
+{
+    echo "Install on ${bold}${green}NVIDIA${reset} ${green}Jetson platform${reset}"
 
     local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
     echo "${green} - Enable dockers to build jetson_multimedia api folder${reset}"
@@ -145,6 +152,8 @@ main()
 
     sudo -v
 
+    # Install docker and docker compose
+    install_docker
     # Check if is running on NVIDIA Jetson platform
     if [[ $PLATFORM = "aarch64" ]]; then
         # Read version
@@ -156,7 +165,7 @@ main()
         local JETSON_L4T_REVISION=${JETSON_L4T_ARRAY#"$JETSON_L4T_RELEASE."}
         # Load L4T release
         echo "L4T=L4T-$JETSON_L4T_RELEASE" >> .env
-        install_jetson
+        # install_jetson
     else
         install_x86
     fi
