@@ -156,10 +156,11 @@ main()
             # extract version
             local JETSON_L4T_ARRAY=$(echo $JETSON_L4T_STRING | cut -f 1 -d '-')
             # Load release and revision
-            local JETSON_L4T_RELEASE=$(echo $JETSON_L4T_ARRAY | cut -f 1 -d '.')
+            local JETSON_L4T_RELEASE=$(echo $JETSON_L4T_ARRAY | cut -f1,2 -d '.')
             local JETSON_L4T_REVISION=${JETSON_L4T_ARRAY#"$JETSON_L4T_RELEASE."}
             # Load L4T release
-            echo "L4T=L4T-$JETSON_L4T_RELEASE" >> .env
+            echo "L4T=L4T-$JETSON_L4T_RELEASE.$JETSON_L4T_REVISION" >> .env
+            echo "L4T_RELEASE=L4T-$JETSON_L4T_RELEASE" >> .env
         fi
     fi
 

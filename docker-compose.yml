@@ -35,7 +35,7 @@ services:
       ACCESS_TOKEN: ${GITHUB_ACTIONS_ACCESS_TOKEN}
       RUNNER_WORKDIR: ${PWD}/github-actions
       RUNNER_SCOPE: 'org'
-      LABELS: linux,gpu,Jetson,nvidia,${L4T}
+      LABELS: linux,gpu,Jetson,nvidia,${L4T},${L4T_RELEASE}
     security_opt:
       # needed on SELinux systems to allow docker container to manage other docker containers
       - label:disable
