@@ -50,12 +50,10 @@ install_jetson()
 {
     echo "Install on ${bold}${green}NVIDIA${reset} ${green}Jetson platform${reset}"
 
-    # Check if is installed docker-compose
-    if ! command -v docker-compose &> /dev/null ; then
-        echo " - ${bold}${green}Install docker-compose${reset}"
-        sudo apt-get install -y libffi-dev python-openssl libssl-dev
-        sudo -H pip3 install -U pip
-        sudo pip3 install -U docker-compose
+    # Check if is installed docker
+    # https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository
+        sudo apt-get update
+        sudo apt-get install -y ca-certificates curl gnupg lsb-release
     fi
 
     local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
@@ -142,6 +140,15 @@ main()
 
     # Check if is running on NVIDIA Jetson platform
     if [[ $PLATFORM = "aarch64" ]]; then
+        # Read version
+        local JETSON_L4T_STRING=$(dpkg-query --showformat='${Version}' --show nvidia-l4t-core)
+        # extract version
+        local JETSON_L4T_ARRAY=$(echo $JETSON_L4T_STRING | cut -f 1 -d '-')
+        # Load release and revision
+        local JETSON_L4T_RELEASE=$(echo $JETSON_L4T_ARRAY | cut -f 1 -d '.')
+        local JETSON_L4T_REVISION=${JETSON_L4T_ARRAY#"$JETSON_L4T_RELEASE."}
+        # Load L4T release
+        echo "L4T=L4T-$JETSON_L4T_RELEASE" >> .env
         install_jetson
     else
         install_x86
