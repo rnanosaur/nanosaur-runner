@@ -165,7 +165,7 @@ main()
         local JETSON_L4T_REVISION=${JETSON_L4T_ARRAY#"$JETSON_L4T_RELEASE."}
         # Load L4T release
         echo "L4T=L4T-$JETSON_L4T_RELEASE" >> .env
-        # install_jetson
+        install_jetson
     else
         install_x86
     fi
