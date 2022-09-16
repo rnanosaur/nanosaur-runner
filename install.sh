@@ -148,6 +148,19 @@ main()
         read -p "Enter GitHub Action token: " TOKEN
         echo "GITHUB_ACTIONS_ACCESS_TOKEN=$TOKEN" >> .env
         echo "HOME=$HOME" >> .env
+
+        # Check if is running on NVIDIA Jetson platform
+        if [[ $PLATFORM = "aarch64" ]]; then
+            # Read version
+            local JETSON_L4T_STRING=$(dpkg-query --showformat='${Version}' --show nvidia-l4t-core)
+            # extract version
+            local JETSON_L4T_ARRAY=$(echo $JETSON_L4T_STRING | cut -f 1 -d '-')
+            # Load release and revision
+            local JETSON_L4T_RELEASE=$(echo $JETSON_L4T_ARRAY | cut -f 1 -d '.')
+            local JETSON_L4T_REVISION=${JETSON_L4T_ARRAY#"$JETSON_L4T_RELEASE."}
+            # Load L4T release
+            echo "L4T=L4T-$JETSON_L4T_RELEASE" >> .env
+        fi
     fi
 
     sudo -v
@@ -156,15 +169,6 @@ main()
     install_docker
     # Check if is running on NVIDIA Jetson platform
     if [[ $PLATFORM = "aarch64" ]]; then
-        # Read version
-        local JETSON_L4T_STRING=$(dpkg-query --showformat='${Version}' --show nvidia-l4t-core)
-        # extract version
-        local JETSON_L4T_ARRAY=$(echo $JETSON_L4T_STRING | cut -f 1 -d '-')
-        # Load release and revision
-        local JETSON_L4T_RELEASE=$(echo $JETSON_L4T_ARRAY | cut -f 1 -d '.')
-        local JETSON_L4T_REVISION=${JETSON_L4T_ARRAY#"$JETSON_L4T_RELEASE."}
-        # Load L4T release
-        echo "L4T=L4T-$JETSON_L4T_RELEASE" >> .env
         install_jetson
     else
         install_x86
