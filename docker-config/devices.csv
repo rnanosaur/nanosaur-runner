@@ -1,0 +1,10 @@
+sym, /usr/local/cuda-11.4/targets/aarch64-linux/lib/libcusolver.so.11
+sym, /usr/local/cuda-11.4/targets/aarch64-linux/lib/libcusparse.so.11
+sym, /usr/local/cuda-11.4/targets/aarch64-linux/lib/libcurand.so.10
+sym, /usr/local/cuda-11.4/targets/aarch64-linux/lib/libnvToolsExt.so
+sym, /usr/local/cuda-11.4/targets/aarch64-linux/lib/libcupti.so.11.4
+dir, /usr/local/cuda-11.4/targets/aarch64-linux/include
+dir, /usr/src/jetson_multimedia_api
+dir, /opt/nvidia/nsight-systems-cli
+dir, /opt/nvidia/vpi2
+dir, /usr/share/vpi2
